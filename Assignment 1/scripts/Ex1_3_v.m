@@ -15,6 +15,7 @@ figure;
 plotlssvm({Xtrain,Ytrain,type,gamma,[],'lin_kernel','preprocess'},{alpha,b});
 grid on 
 fig = gcf;
+saveas(fig, './linear_classification_DONOTUSE.pdf')
 exportgraphics(fig, './figures/linear_classification.pdf', 'ContentType', 'vector', 'Resolution', 300);
 [Ypred, Zt] = simlssvm({Xtrain,Ytrain,type,gamma,[],'lin_kernel'}, {alpha,b}, Xtest);
 
@@ -233,10 +234,10 @@ for loop = [1:1]
         execution_speeds = [execution_speeds, toc];
     end
 
-    simp = sprintf('Simplex Tuning Results (Run[%d]):\n  Gamma = %.2f\n  Sigma^2 = %.2f\n  Cost = %.2f\n  CPUtime = %.2f\n', loop, gammas(1), sigma2s(1), costs(1), execution_speeds(1));
-    grid = sprintf('Gridsearch Tuning Results (Run[%d]):\n  Gamma = %.2f\n  Sigma^2 = %.2f\n  Cost = %.2f\n  CPUtime = %.2f\n', loop, gammas(2), sigma2s(2), costs(2), execution_speeds(2));
+    simplex = sprintf('Simplex Tuning Results (Run[%d]):\n  Gamma = %.2f\n  Sigma^2 = %.2f\n  Cost = %.2f\n  CPUtime = %.2f\n', loop, gammas(1), sigma2s(1), costs(1), execution_speeds(1));
+    gridsearch = sprintf('Gridsearch Tuning Results (Run[%d]):\n  Gamma = %.2f\n  Sigma^2 = %.2f\n  Cost = %.2f\n  CPUtime = %.2f\n', loop, gammas(2), sigma2s(2), costs(2), execution_speeds(2));
 
-    text_output = [text_output, simp, grid];
+    text_output = [text_output, simplex, gridsearch];
     
 end
 text_output
