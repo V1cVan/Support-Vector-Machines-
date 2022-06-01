@@ -1,0 +1,700 @@
+clc 
+clear 
+close all 
+
+% ======================== 1.1 ==========================================
+%% Kernel PCA 
+%{ 
+Kernel principal component analysis (KPCA) corresponds to linear PCA in a kernel-induced
+feature space, which is non-linearly related to the original input space. Thus, nonlinearities
+can be included via the kernel function and the corresponding problem keeps the form of
+an eigenvalue problem. Kernel PCA has numerous applications: it can be used for feature
+extraction, denoising, dimensionality reduction and density estimation, among others. In
+this section, we will explore the use of kernel PCA for denoising.
+
+Unsupervised learning can be done by kernel based PCA (kpca) as described by [30], for which
+a primal-dual interpretation with least squares support vector machine formulation has been given
+in [37], which has also be further extended to kernel canonical correlation analysis [38] and kernel
+PLS.
+%} 
+
+clc;
+clear;
+close all 
+
+nb = 400; % Number of datapoints 
+sig = 0.3; % Dataset dispersion 
+
+nb=nb/2;
+
+% construct data
+leng = 1;
+for t=1:nb, 
+  yin(t,:) = [2.*sin(t/nb*pi*leng) 2.*cos(.61*t/nb*pi*leng) (t/nb*sig)]; 
+  yang(t,:) = [-2.*sin(t/nb*pi*leng) .45-2.*cos(.61*t/nb*pi*leng) (t/nb*sig)]; 
+  samplesyin(t,:)  = [yin(t,1)+yin(t,3).*randn   yin(t,2)+yin(t,3).*randn];
+  samplesyang(t,:) = [yang(t,1)+yang(t,3).*randn   yang(t,2)+yang(t,3).*randn];
+end
+
+% Plot the original dataset 
+figure() 
+hold on
+grid on 
+plot(samplesyin(:,1),samplesyin(:,2),'o');
+plot(samplesyang(:,1),samplesyang(:,2),'o');
+xlabel('X_1');
+ylabel('X_2');
+title('Structured dataset');
+fig = gcf;
+saveas(fig, '../figures/1_1/yinyan_dataset_clean.pdf')
+
+% % User defined parameters 
+% nc = 6; % Number of PCA components 
+% sig2 = 0.4; % RBF Kernel parameter Sig2 
+% % Approximation technique 
+% approx = 1; % 1 for Lanczos | 2 for Nystrom
+
+number_components = [2, 4, 6, 8]; 
+approx_techniques = [1, 2];
+sigma2s = [0.1 0.4 1.0];
+
+for nc = number_components 
+    for sig2 = sigma2s 
+        for approx  = approx_techniques 
+            
+            if approx == 1
+                approx='eigs';
+                approx_name = 'Lanczos';
+            else
+                approx='eign';
+                approx_name = 'Nystrom';
+            end
+
+            % calculate the eigenvectors in the feature space (principal components)
+            [lam,U] = kpca([samplesyin;samplesyang],'RBF_kernel',sig2,[],approx,nc);
+
+%             % calculate the projections on the principal components
+%             Xax = -3:.1:3; Yax = -3.2:.1:3.2;
+%             [A,B] = meshgrid(Xax,Yax);
+%             grid = [reshape(A,prod(size(A)),1) reshape(B,1,prod(size(B)))'];
+%             k = kernel_matrix([samplesyin;samplesyang],'RBF_kernel',sig2,grid)';
+%             projections = k*U;
+% 
+%             %plot the projections on the first component
+%             plot(samplesyin(:,1),samplesyin(:,2),'o');
+%             hold on;
+%             plot(samplesyang(:,1),samplesyang(:,2),'o');
+%             contour(Xax,Yax,reshape(projections(:,1),length(Yax),length(Xax)));
+%             title(sprintf('Kernel PCA - Input space to first component - N_c = %d, Approx. tech. = %s, sigma^2 = %.1f',nc,approx_name, sig2));
+%             xlabel('X_1');
+%             ylabel('X_2');
+
+
+            % Denoise the data by minimizing the reconstruction error
+            xd = denoise_kpca([samplesyin;samplesyang],'RBF_kernel',sig2,[],approx,nc);
+            h2=figure;
+            hold on 
+            grid on 
+            plot(samplesyin(:,1),samplesyin(:,2),'o');
+            plot(samplesyang(:,1),samplesyang(:,2),'o');
+            plot(xd(:,1),xd(:,2),'r+');
+            title(sprintf('Kernel PCA - N_c = %d, Approx. method = %s, sigma^2 = %.1f',nc,approx_name, sig2),'Interpreter','latex');
+            legend('Yin datapoints', 'Yan datapoints', 'Denoised K-PCA datapoints', 'Location', 'southeast') 
+            xlabel('X_1');
+            ylabel('X_2');
+            fig = gcf;
+            figname = sprintf('../figures/1_1/kpca_Nc_%d_method_%s_sig2_%.1f.pdf',nc,approx_name, sig2);
+            saveas(fig, figname)
+
+
+            % Projections on the first component using linear PCA
+            dat=[samplesyin;samplesyang];
+            dat(:,1)=dat(:,1)-mean(dat(:,1));
+            dat(:,2)=dat(:,2)-mean(dat(:,2));
+
+            [lam_lin,U_lin] = pca(dat);
+
+%             proj_lin=grid*U_lin;
+
+%             figure; 
+%             plot(samplesyin(:,1),samplesyin(:,2),'o');
+%             hold on;
+%             grid on 
+%             plot(samplesyang(:,1),samplesyang(:,2),'o');
+% %             contour(Xax,Yax,reshape(proj_lin(:,1),length(Yax),length(Xax)));
+%             xdl=dat*U_lin(:,1)*U_lin(:,1)';
+%             plot(xdl(:,1),xdl(:,2),'r+');
+%             title(sprintf('Linear Kernel PCA (first component) - N_c = %d, Approx. tech. = %s, sigma^2 = %.1f',nc,approx_name, sig2));
+%             xlabel('X_1');
+%             ylabel('X_2');
+         end
+    end 
+end 
+
+
+% ======================== 1.2 ==========================================
+%% Spectral clustering 
+%{ 
+    Spectral clustering techniques make use of the eigenvectors of a Laplacian matrix derived
+    from the data to create groups of data points that are similar. In this context, the kernel
+    function acts as a similarity measure between two data points. The Laplacian matrix is
+    consequently obtained by rescaling the kernel matrix. Note that these techniques can be
+    interpreted as a form of kernel PCA.
+%} 
+
+clear;
+clc 
+close all 
+
+load two3drings;    
+sigmas = [0.001, 0.005, 0.01, 0.02, 0.05, 0.1]; 
+[N,d]=size(X);
+N_components  = 3;
+perm=randperm(N);   % shuffle the data
+X=X(perm,:);
+
+for sig2 = sigmas
+    K=kernel_matrix(X,'RBF_kernel',sig2);       %compute the RBF kernel (affinity) matrix
+    D=diag(sum(K));                             % compute the degree matrix (sum of the columns of K)
+    [U,lambda]=eigs(inv(D)*K,N_components);   	% Compute the 3 largest eigenvalues/vectors using Lanczos
+                                                % The largest eigenvector does not contain
+                                                % clustering information. For binary clustering,
+                                                % the solution is the second largest eigenvector.
+
+    clust=sign(U(:,2));                         % Threshold the eigenvector solution to obtain binary cluster indicators
+
+    [y,order]=sort(clust,'descend');            % Sort the data using the cluster information
+    Xsorted=X(order,:);
+
+    Ksorted=kernel_matrix(Xsorted,'RBF_kernel',sig2);   % Compute the kernel matrix of the
+                                                        % sorted data.
+
+    proj=K*U(:,2:3);                            % Compute the projections onto the subspace spanned by the second,
+                                                % and third largest eigenvectors.                                   
+ 
+    figure()
+    subplot(1,2,1)
+    scatter3(X(:,1),X(:,2),X(:,3),15);
+    title('Two interlaced rings in a 3D space');
+    xlabel('X_1') 
+    ylabel('X_2')
+    zlabel('X_3') 
+    subplot(1,2,2);
+    scatter3(X(:,1),X(:,2),X(:,3),30,clust);
+    title(sprintf('Clustering results for sigma^2 = %.3f', sig2));
+    xlabel('X_1') 
+    ylabel('X_2')
+    zlabel('X_3') 
+    fig = gcf;
+    figname = sprintf('../figures/1_2/spectral_rings_sig2_%.3f.pdf',sig2);
+    saveas(fig, figname)
+    
+    figure();
+    subplot(1,2,1);
+    imshow(K);
+    title('Kernel matrix - original data');
+    subplot(1,2,2);
+    imshow(Ksorted);
+    title(sprintf('Kernel matrix after sorting for sigma^2 = %.3f', sig2));
+    fig = gcf;
+    figname = sprintf('../figures/1_2/kernel_sig2_%.3f.pdf',sig2);
+    saveas(fig, figname)
+
+    figure();
+    scatter(proj(:,1),proj(:,2),15,clust);
+    title(sprintf('Projection onto 2nd and 3rd largest eigenvectors for sigma^2 = %.3f', sig2));
+    grid on 
+    xlabel('X_1') 
+    ylabel('X_2')
+    fig = gcf;
+    figname = sprintf('../figures/1_2/1_2_components_sig2_%.3f.pdf',sig2);
+    saveas(fig, figname)
+    
+end 
+
+
+
+% ======================== 1.3 ==========================================
+%% Fixed size LS-SVM 
+%{ 
+    Based on the Nystrom approximation, an approximation to the feature map can be obtained.
+    This map can consequently be used to construct parametric models in the primal
+    representation of the LS-SVM model. The approximation of the feature space is based on a
+    fixed subset of data-points. One way to select this fixed-size set is to optimize the entropy
+    criterion (kentropy) of the subset.
+    In some cases, we are interested in a sparser solution that we can attain using a predefined
+    number of representative points. We can achieve this by applying L0-type of a penalty in
+    an iterative fashion to an initial fixed-size LS-SVM solution.
+
+
+    
+    Fixed Size LS-SVM is a method for solving large scale regression and classification
+    problems. The number of support vectors is pre-fixed beforehand and the support vectors are
+    selected from a pool of training data. After estimating eigenfunctions in relation to a Nystrom
+    approximation with selection of the support vectors according to an entropy criterion, the LS-SVM
+    model is estimated in the primal space.
+%} 
+
+clear
+clc
+close all
+disp('running') 
+N_values = 100; 
+X = 3.*randn(N_values,2);
+sample_size = 10;
+subset = zeros(sample_size,2);
+sigma2s = [0.001, 0.01, 0.1, 1, 10, 100, 1000];
+
+for sig2 = sigma2s
+    figure()
+    
+    for t = 1:N_values
+        % new candidate subset
+        r = ceil(rand*sample_size);
+        candidate = [subset([1:r-1 r+1:end],:); X(t,:)];
+
+        % Quadratic Renyi Entropy (H) for a kernel based estimator
+        % The eigenvalue decomposition can also be computed (or
+        % approximated) implicitly:
+        % >> H = kentropy(X, kernel, sig2)
+        H_candidate = kentropy(candidate, 'RBF_kernel',sig2);
+        H_subset = kentropy(subset, 'RBF_kernel',sig2);
+        if H_candidate > H_subset
+            subset = candidate;
+        end
+        
+        plot(X(:,1),X(:,2),'b*'); 
+        hold on;
+        title(sprintf('Subset candidates for sigma^2 = %.3f',sig2));
+        grid on 
+        xlabel('X1') 
+        ylabel('X2') 
+        plot(subset(:,1),subset(:,2),'ro','linewidth',3); 
+        hold off; 
+
+    end
+    fig = gcf;
+    figname = sprintf('../figures/1_3/subsets_sig2_%.3f.pdf',sig2);
+    saveas(fig, figname)
+end 
+
+%% fslssvm_cript - L_0 approximation 
+% Evaluate test errors, number of support vectors, computation time
+close all 
+clc
+clear 
+
+%data = load('breast_cancer_wisconsin_data.mat','-ascii'); function_type = 'c';
+data = load('shuttle.dat','-ascii'); function_type = 'c';  data = data(1:700,:);
+% data = load('california.dat','-ascii'); function_type = 'f';
+
+X = data(:,1:end-1);
+Y = data(:,end);
+
+% binarize the labels for shuttle data (comment these lines for
+% california!)
+Y(Y == 1) = 1;
+Y(Y ~= 1) = -1;
+
+testX = [];
+testY = [];
+
+%Parameter for input space selection
+%Please type >> help fsoperations; to get more information  
+%{ 
+k = ...
+constant factor used to determine number of representative
+points by heursitic k*sqrt(N) where N = dataset size
+function_type = 'c' or 'f' for classification & regression
+respectively
+%}
+k = 4;
+
+kernel_type = 'lin_kernel'; % or 'lin_kernel','RBF_kernel', 'poly_kernel'
+global_opt = 'csa'; % 'csa' or 'ds'
+
+%Process to be performed
+user_process={'FS-LSSVM', 'SV_L0_norm'};
+% user_process={'SV_L0_norm'};
+window = [5, 10, 15, 20, 25, 30];
+
+[errors, N_support_vectors, time_taken] = fslssvm(X,Y,k,function_type,kernel_type,global_opt,user_process,window,testX,testY);
+%IMAGES SAVED MANUALLY 
+
+
+% ======================== 2.1 ==========================================
+%% Homework problems - K-PCA - Denoising digits KERNEL VS LINEAR 
+% DIGITS 
+%{ 
+    
+%} 
+
+clear  
+close all 
+clc 
+
+% Experiments on the handwriting data set on kPCA for reconstruction and denoising
+load digits; clear size
+[N, dim]=size(X);
+Ntest=size(Xtest1,1);
+minx=min(min(X)); 
+maxx=max(max(X));
+
+% Add noise to the digit maps
+noisefactor = 1;
+noise = noisefactor*maxx; % sd for Gaussian noise
+
+Xn = X; 
+for i=1:N
+  randn('state', i);
+  Xn(i,:) = X(i,:) + noise*randn(1, dim);
+end
+
+Xnt = Xtest1; 
+for i=1:size(Xtest1,1)
+  randn('state', N+i);
+  Xnt(i,:) = Xtest1(i,:) + noise*randn(1,dim);
+end
+
+% select training set
+Xtr = X(1:1:end,:);
+sig2 =dim*mean(var(Xtr)); % rule of thumb
+sigmafactor = 0.7;
+sig2=sig2*sigmafactor;
+
+% kernel based Principal Component Analysis using the original training data
+disp('Kernel PCA: extract the principal eigenvectors in feature space');
+disp(['sig2 = ', num2str(sig2)]);
+
+% linear PCA
+[lam_lin,U_lin] = pca(Xtr);
+
+% kernel PCA
+[lam,U] = kpca(Xtr,'RBF_kernel',sig2,[],'eig',240); 
+[lam, ids]=sort(-lam); lam = -lam; U=U(:,ids);
+
+% Denoise using the first principal components
+disp(' ');
+disp(' Denoise using the first PCs');
+
+% choose the digits for test
+digs = [0:9]; 
+ndig=length(digs);
+m=2; % Choose the mth data for each digit 
+
+Xdt=zeros(ndig,dim);
+
+% figure of all digits
+figure(1); 
+colormap('gray'); 
+title('Denosing using linear PCA'); 
+tic
+
+% which number of eigenvalues of kpca
+npcs = [2.^(0:7) 190];
+lpcs = length(npcs);
+
+% KPCA RECONSTRUCTION 
+for k=1:lpcs
+    nb_pcs=npcs(k); 
+    disp(['nb_pcs = ', num2str(nb_pcs)]); 
+    Ud=U(:,(1:nb_pcs)); lamd=lam(1:nb_pcs);
+    for i=1:ndig
+        dig=digs(i);
+        fprintf('digit %d : ', dig)
+        xt=Xnt(i,:);
+        if k==1 
+            % plot the original clean digits
+            subplot(2+lpcs, ndig, i);
+            pcolor(1:15,16:-1:1,reshape(Xtest1(i,:), 15, 16)'); 
+            shading interp; 
+            
+            set(gca,'xticklabel',[]);set(gca,'yticklabel',[]);        
+            if i==1
+                ylabel('original')
+            end 
+
+            % plot the noisy digits 
+            subplot(2+lpcs, ndig, i+ndig); 
+            pcolor(1:15,16:-1:1,reshape(xt, 15, 16)'); 
+            shading interp; 
+            set(gca,'xticklabel',[]);
+            set(gca,'yticklabel',[]);        
+            if i==1
+                ylabel('noisy')
+            end
+            drawnow
+        end    
+        Xdt(i,:) = preimage_rbf(Xtr,sig2,Ud,xt,'denoise');
+        subplot(2+lpcs, ndig, i+(2+k-1)*ndig);
+        pcolor(1:15,16:-1:1,reshape(Xdt(i,:), 15, 16)'); 
+        shading interp; 
+        set(gca,'xticklabel',[]);
+        set(gca,'yticklabel',[]);           
+        if i==1
+            ylabel(['n=',num2str(nb_pcs)])
+        end
+        drawnow    
+    end % for i
+end % for k
+fig = gcf;
+figname = '../figures/2_1/KPCA.pdf';
+saveas(fig, figname)
+
+
+% denosing using Linear PCA for comparison
+% which number of eigenvalues of pca
+npcs = [2.^(0:7) 190];
+lpcs = length(npcs);
+% LINEAR RECONSTRUCTION 
+figure(2); 
+colormap('gray');
+title('Denosing using linear PCA');
+for k=1:lpcs
+    nb_pcs=npcs(k); 
+    Ud=U_lin(:,(1:nb_pcs)); lamd=lam(1:nb_pcs);
+
+    for i=1:ndig
+        dig=digs(i);
+        xt=Xnt(i,:);
+        proj_lin=xt*Ud; % projections of linear PCA
+        if k==1 
+            % plot the original clean digits
+            subplot(2+lpcs, ndig, i);
+            pcolor(1:15,16:-1:1,reshape(Xtest1(i,:), 15, 16)'); 
+            
+            shading interp; 
+            set(gca,'xticklabel',[]);set(gca,'yticklabel',[]);                
+            if i==1, ylabel('original'), end  
+
+            % plot the noisy digits 
+            subplot(2+lpcs, ndig, i+ndig); 
+            pcolor(1:15,16:-1:1,reshape(xt, 15, 16)'); shading interp; 
+            set(gca,'xticklabel',[]);set(gca,'yticklabel',[]);  
+            
+            if i==1
+                ylabel('noisy') 
+            end
+        end
+        Xdt_lin(i,:) = proj_lin*Ud';
+        subplot(2+lpcs, ndig, i+(2+k-1)*ndig);
+        pcolor(1:15,16:-1:1,reshape(Xdt_lin(i,:), 15, 16)'); shading interp; 
+        set(gca,'xticklabel',[]);set(gca,'yticklabel',[]);        
+
+        if i==1 
+            ylabel(['n=',num2str(nb_pcs)])
+        end
+    end % for i
+end % for k
+fig = gcf;
+figname = '../figures/2_1/Linear_PCA.pdf';
+saveas(fig, figname)
+
+
+%% Homework problems - K-PCA - Denoising digits Test with different sigma values 
+clear  
+close all 
+clc 
+
+% Experiments on the handwriting data set on kPCA for reconstruction and denoising
+load digits; clear size
+[N, dim]=size(X);
+Ntest=size(Xtest1,1);
+minx=min(min(X)); 
+maxx=max(max(X));
+
+% Add noise to the digit maps
+noisefactor = 1;
+noise = noisefactor*maxx; % sd for Gaussian noise
+
+Xn = X; 
+for i=1:N
+  randn('state', i);
+  Xn(i,:) = X(i,:) + noise*randn(1, dim);
+end
+
+Xnt = Xtest1; 
+for i=1:size(Xtest1,1)
+  randn('state', N+i);
+  Xnt(i,:) = Xtest1(i,:) + noise*randn(1,dim);
+end
+
+% select training set
+Xtr = X(1:1:end,:);
+sig2 =dim*mean(var(Xtr)); % rule of thumb
+
+sigmafactors = [0.1, 1, 10, 100];
+
+for sigmafactor = sigmafactors
+    % sigmafactor = 0.7;
+    sig2=sig2*sigmafactor;
+
+    % kernel based Principal Component Analysis using the original training data
+    disp('Kernel PCA: extract the principal eigenvectors in feature space');
+    disp(['sig2 = ', num2str(sig2)]);
+
+    % linear PCA
+    [lam_lin,U_lin] = pca(Xtr);
+
+    % kernel PCA
+    [lam,U] = kpca(Xtr,'RBF_kernel',sig2,[],'eig',240); 
+    [lam, ids]=sort(-lam); lam = -lam; U=U(:,ids);
+
+    % Denoise using the first principal components
+    disp(' ');
+    disp(' Denoise using the first PCs');
+
+    % choose the digits for test
+    digs = [0:9]; 
+    ndig=length(digs);
+    m=2; % Choose the mth data for each digit 
+
+    Xdt=zeros(ndig,dim);
+
+    % figure of all digits
+    figure(); 
+    colormap('gray'); 
+    title('Denosing using linear PCA'); 
+    tic
+
+    % which number of eigenvalues of kpca
+    npcs = [2.^(0:7) 190];
+    lpcs = length(npcs);
+
+    % KPCA RECONSTRUCTION 
+    for k=1:lpcs
+        nb_pcs=npcs(k); 
+        disp(['nb_pcs = ', num2str(nb_pcs)]); 
+        Ud=U(:,(1:nb_pcs)); lamd=lam(1:nb_pcs);
+        for i=1:ndig
+            dig=digs(i);
+            fprintf('digit %d : ', dig)
+            xt=Xnt(i,:);
+            if k==1 
+                % plot the original clean digits
+                subplot(2+lpcs, ndig, i);
+                pcolor(1:15,16:-1:1,reshape(Xtest1(i,:), 15, 16)'); 
+                shading interp; 
+
+                set(gca,'xticklabel',[]);set(gca,'yticklabel',[]);        
+                if i==1
+                    ylabel('original')
+                end 
+
+                % plot the noisy digits 
+                subplot(2+lpcs, ndig, i+ndig); 
+                pcolor(1:15,16:-1:1,reshape(xt, 15, 16)'); 
+                shading interp; 
+                set(gca,'xticklabel',[]);
+                set(gca,'yticklabel',[]);        
+                if i==1
+                    ylabel('noisy')
+                end
+                drawnow
+            end    
+            Xdt(i,:) = preimage_rbf(Xtr,sig2,Ud,xt,'denoise');
+            subplot(2+lpcs, ndig, i+(2+k-1)*ndig);
+            pcolor(1:15,16:-1:1,reshape(Xdt(i,:), 15, 16)'); 
+            shading interp; 
+            set(gca,'xticklabel',[]);
+            set(gca,'yticklabel',[]);           
+            if i==1
+                ylabel(['n=',num2str(nb_pcs)])
+            end
+            drawnow    
+        end % for i
+    end % for k
+    fig = gcf;
+    figname = sprintf('../figures/2_1/KPCA_sigmafactor_%.2f.pdf',sigmafactor);
+    saveas(fig, figname)
+end
+
+
+
+%% Homework problems - K-PCA - RECONSTRUCTION ERROR 
+% DIGITS 
+%{ 
+    
+%} 
+
+% DO THIS QUESTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+% ======================== 2.2.1 ==========================================
+%% Fixed size LS-SVM - Shuttle 
+%{ 
+    Number of attributes = 9 
+    Classification 
+    Number instances = 58000
+    Multivariate 
+    80% of data belongs to 1 class (default accuracy = 80%) 
+%} 
+
+close all 
+clc
+clear 
+
+data = load('shuttle.dat','-ascii'); 
+function_type = 'c'; 
+data = data(1:700,:);
+
+X = data(:,1:end-1);
+Y = data(:,end);
+
+Y(Y == 1) = 1;
+Y(Y ~= 1) = -1;
+
+testX = [];
+testY = [];
+
+
+% Plot section of the data 
+figure() 
+
+
+%Parameter for input space selection
+%Please type >> help fsoperations; to get more information  
+
+k = 4;
+% function_type = 'c'; %'c' - classification, 'f' - regression  
+kernel_type = 'RBF_kernel'; % or 'lin_kernel', 'poly_kernel'
+global_opt = 'csa'; % 'csa' or 'ds'
+
+%Process to be performed
+user_process={'FS-LSSVM'};
+window = [10,15,20,25,30];
+
+figure() 
+[e,s,t] = fslssvm(X,Y,k,function_type,kernel_type,global_opt,user_process,window,testX,testY);
+
+
+
+% ======================== 2.2.1 ==========================================
+
+%% Fixed size LS-SVM - Califorinia 
+data = load('california.dat','-ascii'); function_type = 'f';
+% addpath('../LSSVMlab')
+
+X = data(:,1:end-1);
+Y = data(:,end);
+testX = [];
+testY = [];
+
+%%
+
+%Parameter for input space selection
+%Please type >> help fsoperations; to get more information  
+
+k = 4;
+% function_type = 'c'; %'c' - classification, 'f' - regression  
+kernel_type = 'RBF_kernel'; % or 'lin_kernel', 'poly_kernel'
+global_opt = 'csa'; % 'csa' or 'ds'
+
+%Process to be performed
+user_process={'FS-LSSVM'};
+window = [15,20,25];
+
+[e,s,t] = fslssvm(X,Y,k,function_type,kernel_type,global_opt,user_process,window,testX,testY);
+
+
+
