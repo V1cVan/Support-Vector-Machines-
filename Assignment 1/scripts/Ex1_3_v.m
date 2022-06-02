@@ -15,8 +15,7 @@ figure;
 plotlssvm({Xtrain,Ytrain,type,gamma,[],'lin_kernel','preprocess'},{alpha,b});
 grid on 
 fig = gcf;
-saveas(fig, './linear_classification_DONOTUSE.pdf')
-exportgraphics(fig, './figures/linear_classification.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/linear_classification.pdf', 'ContentType', 'vector', 'Resolution', 300);
 [Ypred, Zt] = simlssvm({Xtrain,Ytrain,type,gamma,[],'lin_kernel'}, {alpha,b}, Xtest);
 
 err = sum(Ypred~=Ytest); 
@@ -32,12 +31,12 @@ for degree = degree_list
     disp(fprintf('\n == \n Polynomial kernel of degree %d',degree))   
     
     [alpha,b] = trainlssvm({Xtrain,Ytrain,type,gamma,[t; degree],'poly_kernel'});
-     
+      
     figure; 
     plotlssvm({Xtrain,Ytrain,type,gamma,[t; degree],'poly_kernel','preprocess'},{alpha,b});
     grid on 
     fig = gcf;
-    figname = sprintf('./figures/polynomial_classif_deg_%d.pdf',degree);
+    figname = sprintf('../figures/polynomial_classif_deg_%d.pdf',degree);
     exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
     [Ypred, Zt] = simlssvm({Xtrain,Ytrain,type,gamma,[t; degree],'poly_kernel'}, {alpha,b}, Xtest);
     
@@ -55,7 +54,7 @@ xlabel('Polynomial degree')
 ylabel('Classificaiton accuracy [%]') 
 title('Classification accuracy for increasing polynomial degrees') ;
 fig = gcf;
-exportgraphics(fig, './figures/class_acc_poly_deg_val.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/class_acc_poly_deg_val.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 %% LS-SVM classifier - RBF Kernel 
 close all 
@@ -73,7 +72,7 @@ for sigma2=sig2list
     plotlssvm({Xtrain,Ytrain,type,gamma,sigma2,'RBF_kernel','preprocess'},{alpha,b});
     grid on
     fig = gcf;
-    figname = sprintf('./figures/rbf_classif_sigma2_%.2f.pdf',sigma2);
+    figname = sprintf('../figures/rbf_classif_sigma2_%.2f.pdf',sigma2);
     exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
     % Obtain the output of the trained classifier
@@ -102,7 +101,7 @@ ylabel('Classificaiton accuracy [%]')
 grid on;
 title('Classification accuracy for increasing \sigma^2 values') ;
 fig = gcf;
-exportgraphics(fig, './figures/class_acc_sigma2_val.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/class_acc_sigma2_val.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % ======================== 1.3.2 ==========================================
 
@@ -167,7 +166,7 @@ end
 [x, y] = meshgrid(log(gamma_list), log(sigma2_list)); 
 
 figure;
-surf(x, y, perf_mat_split*100)
+surf(x, y, perf_mat_split)
 colorbar
 view(-135,45)
 xlabel('log10(\gamma)')
@@ -176,7 +175,7 @@ zlabel('Misclassification cost')
 title('Random split (80/20)')
 grid on 
 fig = gcf;
-exportgraphics(fig, './figures/random_split_validation_surf.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/random_split_validation_surf.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 figure; 
 surf(x, y, perf_mat_cv)
@@ -188,7 +187,8 @@ zlabel('Misclassification cost')
 title('10-fold Cross Validation')
 grid on 
 fig = gcf;
-exportgraphics(fig, './figures/10_fold_cross_validation_surf.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/10_fold_cross_validation_surf.pdf', 'ContentType', 'vector', 'Resolution', 300);
+
 
 figure; 
 surf(x, y, perf_mat_loo)
@@ -200,7 +200,7 @@ zlabel('Misclassification cost')
 title('Leave-one-out Cross Validation')
 grid on 
 fig = gcf;
-exportgraphics(fig, './figures/loo_cross_validation_surf.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/loo_cross_validation_surf.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 
 % ======================== 1.3.3 ==========================================
@@ -232,6 +232,25 @@ for loop = [1:1]
         sigma2s = [sigma2s, sig2]; 
         costs = [cost, costs]; 
         execution_speeds = [execution_speeds, toc];
+
+        if algo_idx == 1
+            % simp
+            plotlssvm({Xtrain,Ytrain,type,gam,sig2,'RBF_kernel','preprocess'},{alpha,b});
+            grid on
+            fig = gcf;
+            figname = '../figures/rbf_simplex_optimal.pdf';
+            exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
+            
+        else 
+            % grid
+            plotlssvm({Xtrain,Ytrain,type,gam,sig2,'RBF_kernel','preprocess'},{alpha,b});
+            grid on
+            fig = gcf;
+            figname = '../figures/rbf_gridsearch_optimal.pdf';
+            exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
+            
+        end
+        
     end
 
     simplex = sprintf('Simplex Tuning Results (Run[%d]):\n  Gamma = %.2f\n  Sigma^2 = %.2f\n  Cost = %.2f\n  CPUtime = %.2f\n', loop, gammas(1), sigma2s(1), costs(1), execution_speeds(1));
@@ -282,11 +301,11 @@ for algo_idx = [1:2]
     if algo_idx == 1
         sprintf('Area under simplex optimised classifier = %.2f', area)
         fig = gcf;
-        exportgraphics(fig, './figures/simplex_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+        exportgraphics(fig, '../figures/simplex_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
     else 
         sprintf('Area under gridsearch optimised classifier = %.2f', area)
         fig = gcf;
-        exportgraphics(fig, './figures/gridsearch_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+        exportgraphics(fig, '../figures/gridsearch_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
     end 
 end
 
@@ -303,7 +322,7 @@ figure();
 lin_class_results = roc( Ylatent , Ytest);
 grid on
 fig = gcf;
-exportgraphics(fig, './figures/linear_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/linear_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 sprintf("Linear classifier area under ROC curve = %.2f", lin_class_results(1)) 
 
 
@@ -332,11 +351,11 @@ load iris.mat
 gam = 1; 
 sig2 = 1;
 figure()
-bay_modoutClass ({ Xtrain , Ytrain , 'c', gam , sig2 }, 'figure');
+bay_modoutClass({ Xtrain , Ytrain , 'c', gam , sig2 }, 'figure');
 grid on
 colorbar
 fig = gcf;
-figname = sprintf('./figures/bayes_rbf_gamma_%d_sig2_%d.pdf', gam, sig2);
+figname = sprintf('../figures/bayes_rbf_gamma_%d_sig2_%d.pdf', gam, sig2);
 exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 % Investigate different values for gamma 
@@ -348,7 +367,7 @@ for gam = gammas
     grid on
     colorbar
     fig = gcf;
-    figname = sprintf('./figures/bayes_rbf_gamma_%d_sig2_%d.pdf', gam, sig2);
+    figname = sprintf('../figures/bayes_rbf_gamma_%d_sig2_%d.pdf', gam, sig2);
     exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 end 
 
@@ -363,7 +382,7 @@ for sig2 = sigma2s
     grid on
     colorbar
     fig = gcf;
-    figname = sprintf('./figures/bayes_rbf_gamma_%d_sig2_%d.pdf', gam, sig2);
+    figname = sprintf('../figures/bayes_rbf_gamma_%d_sig2_%d.pdf', gam, sig2);
     exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 end 
 
@@ -376,7 +395,7 @@ end
 %}
 clc, clear, close all 
 disp('================ RIPLEY DATASET ================') 
-load './data/ripley.mat'
+load '../data/ripley.mat'
 
 X = [Xtrain;Xtest];
 Y = [Ytrain;Ytest];
@@ -401,7 +420,7 @@ plotlssvm(tuned_model, {alpha, b});
 grid on 
 colorbar
 fig = gcf;
-exportgraphics(fig, './figures/ripley_simplex_rbf_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/ripley_simplex_rbf_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % Classification on the test data.
 [Ypred , Ylatent] = simlssvm(tuned_model, {alpha , b}, Xtest);
@@ -412,7 +431,7 @@ area = roc(Ylatent , Ytest);
 grid on 
 sprintf('Area under simplex optimised rbf classifier on Ripley dataset = %.3f', area)
 fig = gcf;
-exportgraphics(fig, './figures/ripley_simplex_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/ripley_simplex_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 
 disp('------------------- POLYNOMIAL KERNEL -------------------') 
@@ -431,7 +450,7 @@ plotlssvm(tuned_model, {alpha, b});
 grid on 
 colorbar
 fig = gcf;
-exportgraphics(fig, './figures/ripley_simplex_polynomial_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/ripley_simplex_polynomial_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % Classification on the test data.
 [Ypred , Ylatent] = simlssvm(tuned_model, {alpha , b}, Xtest);
@@ -442,7 +461,7 @@ area = roc(Ylatent , Ytest);
 grid on 
 sprintf('Area under simplex optimised polynomial classifier on Ripley dataset = %.3f', area)
 fig = gcf;
-exportgraphics(fig, './figures/ripley_simplex_polynomial_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/ripley_simplex_polynomial_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 
 disp('------------------- LINEAR KERNEL -------------------') 
@@ -461,7 +480,7 @@ plotlssvm(tuned_model, {alpha, b});
 grid on 
 colorbar
 fig = gcf;
-exportgraphics(fig, './figures/ripley_simplex_linear_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/ripley_simplex_linear_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % Classification on the test data.
 [Ypred , Ylatent] = simlssvm(tuned_model, {alpha , b}, Xtest);
@@ -472,7 +491,7 @@ area = roc(Ylatent , Ytest);
 grid on 
 sprintf('Area under simplex optimised linear classifier on Ripley dataset = %.3f', area)
 fig = gcf;
-exportgraphics(fig, './figures/ripley_simplex_linear_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/ripley_simplex_linear_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % ======================== 2.2 ==========================================
 
@@ -483,7 +502,7 @@ exportgraphics(fig, './figures/ripley_simplex_linear_classifier_roc.pdf', 'Conte
 
 clc, clear, close all 
 disp('================ BREAST CANCER DATASET ================') 
-load './data/breast.mat'
+load '../data/breast.mat'
 
 % Convert data into standard form
 Xtrain = trainset; 
@@ -526,7 +545,7 @@ plotlssvm(tuned_model, {alpha, b});
 grid on 
 colorbar
 fig = gcf;
-exportgraphics(fig, './figures/breast_rbf_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/breast_rbf_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % Classification on the test data.
 [Ypred , Ylatent] = simlssvm(tuned_model, {alpha , b}, Xtest);
@@ -537,7 +556,7 @@ area = roc(Ylatent , Ytest);
 grid on 
 sprintf('Area under simplex optimised rbf classifier on Breast Cancer dataset = %.3f', area)
 fig = gcf;
-exportgraphics(fig, './figures/breast_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/breast_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 
 disp('------------------- POLYNOMIAL KERNEL -------------------') 
@@ -556,7 +575,7 @@ plotlssvm(tuned_model, {alpha, b});
 grid on 
 colorbar
 fig = gcf;
-exportgraphics(fig, './figures/breast_polynomial_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/breast_polynomial_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % Classification on the test data.
 [Ypred , Ylatent] = simlssvm(tuned_model, {alpha , b}, Xtest);
@@ -567,7 +586,7 @@ area = roc(Ylatent , Ytest);
 grid on 
 sprintf('Area under simplex optimised polynomial classifier on Breast cancer dataset = %.3f', area)
 fig = gcf;
-exportgraphics(fig, './figures/breast_polynomial_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/breast_polynomial_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 
 disp('------------------- LINEAR KERNEL -------------------') 
@@ -586,7 +605,7 @@ plotlssvm(tuned_model, {alpha, b});
 grid on 
 colorbar
 fig = gcf;
-exportgraphics(fig, './figures/breast_linear_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/breast_linear_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % Classification on the test data.
 [Ypred , Ylatent] = simlssvm(tuned_model, {alpha , b}, Xtest);
@@ -597,7 +616,7 @@ area = roc(Ylatent , Ytest);
 grid on 
 sprintf('Area under simplex optimised linear classifier on Breast cancer dataset = %.3f', area)
 fig = gcf;
-exportgraphics(fig, './figures/breast_linear_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/breast_linear_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 
 
@@ -655,7 +674,7 @@ plotlssvm(tuned_model, {alpha, b});
 grid on 
 colorbar
 fig = gcf;
-exportgraphics(fig, './figures/diabetes_rbf_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/diabetes_rbf_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % Classification on the test data.
 [Ypred , Ylatent] = simlssvm(tuned_model, {alpha , b}, Xtest);
@@ -666,7 +685,7 @@ area = roc(Ylatent , Ytest);
 grid on 
 sprintf('Area under simplex optimised rbf classifier on Diabetes dataset = %.3f', area)
 fig = gcf;
-exportgraphics(fig, './figures/diabetes_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/diabetes_rbf_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 
 disp('------------------- POLYNOMIAL KERNEL -------------------') 
@@ -685,7 +704,7 @@ plotlssvm(tuned_model, {alpha, b});
 grid on 
 colorbar
 fig = gcf;
-exportgraphics(fig, './figures/diabetes_polynomial_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/diabetes_polynomial_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % Classification on the test data.
 [Ypred , Ylatent] = simlssvm(tuned_model, {alpha , b}, Xtest);
@@ -696,7 +715,7 @@ area = roc(Ylatent , Ytest);
 grid on 
 sprintf('Area under simplex optimised polynomial classifier on Diabetes dataset = %.3f', area)
 fig = gcf;
-exportgraphics(fig, './figures/diabetes_polynomial_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/diabetes_polynomial_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 
 disp('------------------- LINEAR KERNEL -------------------') 
@@ -715,7 +734,7 @@ plotlssvm(tuned_model, {alpha, b});
 grid on 
 colorbar
 fig = gcf;
-exportgraphics(fig, './figures/diabetes_linear_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/diabetes_linear_classification_result.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % Classification on the test data.
 [Ypred , Ylatent] = simlssvm(tuned_model, {alpha , b}, Xtest);
@@ -726,6 +745,6 @@ area = roc(Ylatent , Ytest);
 grid on 
 sprintf('Area under simplex optimised linear classifier on Diabetes dataset = %.3f', area)
 fig = gcf;
-exportgraphics(fig, './figures/diabetes_linear_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
+exportgraphics(fig, '../figures/diabetes_linear_classifier_roc.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 
