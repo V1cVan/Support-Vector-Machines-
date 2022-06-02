@@ -1,0 +1,228 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper, total={6.3in, 8.8in}]{geometry}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{todonotes}
+\usepackage{titling}
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
+
+
+\title{Exercise Session 1: Classification}
+\subtitle{Support Vector Machines - Final Report}
+\author{Victor van Wymeersch - R0690930}
+\date{May 2022}
+
+\begin{document}
+
+\maketitle
+
+    % \begin{figure}
+    %     \centering
+    %     \includegraphics[width=0.95\textwidth]{figures/}
+    %     \caption{}
+    %     \label{fig:}
+    % \end{figure}
+    
+    % \begin{figure}[h]
+    %      \centering
+    %      \begin{subfigure}[b]{0.8\textwidth}
+    %          \centering
+    %          \includegraphics[width=\textwidth]{figures/}
+    %          \caption{}
+    %          \label{fig:}
+    %      \end{subfigure}
+    %      \hfill
+    %      \begin{subfigure}[b]{0.8\textwidth} 
+    %          \centering
+    %          \includegraphics[width=\textwidth]{figures/}
+    %          \caption{}
+    %          \label{fig:}
+    %      \end{subfigure}
+    %     \caption{}
+    % \end{figure}
+    
+\section{Exercises}
+    \subsection{Two Gaussian's}
+        % Two gaussians 
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.80\textwidth]{Assignment 1/figures/two_gaussians.png}
+            \caption{Classification boundary between two Gaussian distributions. }
+            \label{fig:two_gaussians}
+        \end{figure}
+    
+    \subsection{Support vector machine classifier}
+        % Effect of number of datapoints 
+        \begin{figure}[h]
+             \centering
+             \hspace{0.15\textwidth}
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/RBF_few_datapoints.png}
+                %  \caption{Few datapoints}
+                 \label{fig:few_datapoints}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/RBF_many_datapoints.png}
+                %  \caption{Many datapoints}
+                 \label{fig:many_datapoints}
+             \end{subfigure}
+             \hspace{0.15\textwidth}
+            \caption{Effect of increasing the number of datapoints on the classification boundary.}
+        \end{figure}
+    
+        % Effect of sigma2 values  
+        \begin{figure}[h]
+             \centering
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/RBF_low_sigma.png}
+                 \caption{$\sigma^2 = 0.32$}
+                 \label{fig:low_sigma}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/RBF_medium_sigma.png}
+                 \caption{$\sigma^2 = 1.0$}
+                 \label{fig:medium_sigma}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/RBF_high_sigma.png}
+                 \caption{$\sigma^2 = 20$}
+                 \label{fig:high_sigma}
+             \end{subfigure}
+            \caption{Effect of increasing $\sigma^2$ hyperparameter on the decision boundary.}
+        \end{figure}
+        
+        % Effect of regularisation parameter
+        \begin{figure}[h]
+             \centering
+             \hspace{0.15\textwidth}
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/RBF_low_regularisation.png}
+                 \caption{$C = 0.32$}
+                 \label{fig:rbf_low_regularisation}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/RBF_high_regularisation.png}
+                 \caption{$C = 2$}
+                 \label{fig:rbf_high_regularisation}
+             \end{subfigure}
+             \hspace{0.15\textwidth}
+            \caption{Effect of the regularisation hyperparameter $C$ on the decision boundary.}
+        \end{figure}
+    
+        % Linear vs RBF kernel 
+        \begin{figure}[h]
+             \centering
+             \hspace{0.15\textwidth}
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/linear_vs_rbf_1.png}
+                 \caption{Linear kernel}
+                 \label{fig:linear_kernel_vs_rbf_1}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/linear_vs_rbf_2.png}
+                 \caption{RBF kernel}
+                 \label{fig:linear_kernel_vs_rbf_2}
+             \end{subfigure}
+             \hspace{0.15\textwidth}
+            \caption{Linear vs. RBF kernel classification problem. }
+        \end{figure}
+        
+    \subsection{Least-squares support vector machine classifier}
+    
+        \subsubsection{Influence of hyperparameters and kernel parameters}
+            
+            % Effect of hyperparameters 
+            \begin{figure}[h]
+             \centering
+             \hspace{0.05\textwidth}
+             % Polynomial degree
+             \begin{subfigure}[b]{0.4\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/class_acc_poly_deg_val.pdf}
+                %  \caption{Varying polynomial degree}
+                 \label{fig:polynomial_degree}
+             \end{subfigure}
+             \hfill
+             % RBF sigma2 
+             \begin{subfigure}[b]{0.4\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/class_acc_sigma2_val.pdf}
+                %  \caption{Varying $\sigma^2$}
+                 \label{fig:rbf_sigma2}
+             \end{subfigure}
+             \hspace{0.05\textwidth}
+            \caption{Effect of varying polynomial degree (a) and $\sigma^2$ (b) on classification accuracy. }
+        \end{figure}
+            
+        % Tuning for Gamma and Sigma is done in the next section - just explain and point here 
+            
+        \subsubsection{Tuning parameters using validation}
+            % Hyperparameter tuning for different validation techniques
+            \begin{figure}[h]
+             \centering
+             \begin{subfigure}[b]{0.5\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/random_split_validation_surf.pdf}
+                %  \caption{}
+                 \label{fig:random_split_validation}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.5\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/10_fold_cross_validation_surf.pdf}
+                %  \caption{}
+                 \label{fig:10_fold_validation}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.5\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/loo_cross_validation_surf.pdf}
+                %  \caption{}
+                 \label{fig:loo_validation}
+             \end{subfigure}
+            \caption{Effect of $\sigma^2$ and $\gamma$ hyperparameters on cost minimisation for different validation techniques. }
+        \end{figure}
+            
+            
+        \subsubsection{Automatic parameter tuning}
+    
+        \subsubsection{Using ROC curves}
+        
+        \subsubsection{Bayesian framework} 
+            
+        
+\section{Homework problems}
+    \subsection{Ripley dataset} 
+    
+    \subsection{Wisconsin Breast Cancer dataset}
+    
+    \subsection{Diabetes dataset}
+        
+\end{document}
