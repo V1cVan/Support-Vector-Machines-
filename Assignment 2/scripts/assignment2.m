@@ -4,7 +4,7 @@
 %% Parameter sweep of LS-SVM with RBF kernel 
 clc, clear, close all 
 X = ( -3:0.01:3)';
-Y = sinc (X) + 0.1.* randn ( length (X), 1); % sinc function with white noise 
+Y = sinc(X) + 0.1.*randn(length(X), 1); % sinc function with white noise 
 
 Xtrain = X (1:2: end);
 Ytrain = Y (1:2: end);
@@ -35,7 +35,7 @@ for gam = gammas
         plot(min(X):.1:max(X),sinc(min(X):.1:max(X)),'b--');
         grid on
         figname = sprintf('../figures/1_2/rbf_reg_sig2_%.2f_gam_%.2f.pdf', sig2, gam);
-        saveas(fig, figname)        
+        exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);    
     end   
 end 
 
@@ -88,7 +88,7 @@ fig = gcf;
 grid on
 legend('Simplex tuned SV Regression','Datapoints', 'Sinc Function')
 figname = '../figures/1_2/rbf_tuning_results_simp.pdf';
-saveas(fig, figname) 
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 figure()
 % Plot gridsearch 
@@ -99,7 +99,7 @@ fig = gcf;
 grid on
 legend('Gridsearch tuned SV Regression','Datapoints', 'Sinc Function')
 figname = '../figures/1_2/rbf_tuning_results_grid.pdf';
-saveas(fig, figname)        
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);    
 
 disp(sprintf("--\nSearch metod: SIMPLEX\n  Gamma = %.2f, Sigma = %.2f --, Error = %.2f", gam_simplex, sig2_simplex, RMSE_simplex))
 disp(sprintf("--\nSearch metod: Gridsearch\n  Gamma = %.0f, Sigma = %.2f --, Error = %.2f", gam_grid, sig2_grid, RMSE_grid))
@@ -142,7 +142,7 @@ fig = gcf;
 grid on 
 legend('Sinc function','Upper conf. interval', 'Lower conf. interval', 'Datapoints')
 figname = '../figures/1_2/bayesian_regression.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 % ======================== 1.3 ==========================================
 
@@ -198,7 +198,7 @@ grid on
 fig=gcf
 legend('Bayesian regression','Upper 95% conf. bound','Lower 95% conf. bound','Input 1','Input 2','Input 3')
 figname = '../figures/1_3/bayesian_regression.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 % ======================== 1.4 ==========================================
 
@@ -237,7 +237,7 @@ plotlssvm ( model );
 grid on 
 fig = gcf;
 figname = '../figures/1_4/standard_mse.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 % Robust regression with wHuber and MAE cost function 
 model = initlssvm (X, Y, 'f', [], [], 'RBF_kernel');
@@ -250,7 +250,7 @@ plotlssvm ( model );
 grid on 
 fig = gcf;
 figname = '../figures/1_4/robust_mae_whuber.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 
 % Robust regression with 'whampel' and MAE cost function 
@@ -264,7 +264,7 @@ plotlssvm ( model );
 grid on 
 fig = gcf;
 figname = '../figures/1_4/robust_mae_whampel.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 % Robust regression with 'wlogistic' and MAE cost function 
 model = initlssvm (X, Y, 'f', [], [], 'RBF_kernel');
@@ -277,7 +277,7 @@ plotlssvm ( model );
 grid on 
 fig = gcf;
 figname = '../figures/1_4/robust_mae_wlogistic.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 % Robust regression with 'wmyriad' and MAE cost function 
 model = initlssvm (X, Y, 'f', [], [], 'RBF_kernel');
@@ -290,7 +290,7 @@ plotlssvm ( model );
 grid on 
 fig = gcf;
 figname = '../figures/1_4/robust_mae_wmyriad.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 
 % ======================== 2.2 ==========================================
@@ -373,7 +373,7 @@ grid on
 hold off
 fig = gcf;
 figname = '../figures/2_2/MSEvsMAE_ordersweep.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 
 order = 50;
@@ -406,7 +406,7 @@ xlabel('Test sample')
 grid on 
 fig = gcf;
 figname = '../figures/2_2/prediction.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 % ======================== 2.3 ==========================================
 
@@ -463,7 +463,7 @@ grid on
 hold off
 fig = gcf;
 figname = '../figures/2_3/MSEvsMAE_ordersweep.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 
 order = 20;
@@ -497,7 +497,7 @@ xlabel('Test sample')
 grid on 
 fig = gcf;
 figname = '../figures/2_3/prediction_order_20.pdf';
-saveas(fig, figname)
+exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 
 
