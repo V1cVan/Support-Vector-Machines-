@@ -59,7 +59,7 @@
         % Two gaussians 
         \begin{figure}
             \centering
-            \includegraphics[width=0.80\textwidth]{Assignment 1/figures/two_gaussians.png}
+            \includegraphics[width=0.60\textwidth]{Assignment 1/figures/two_gaussians.png}
             \caption{Classification boundary between two Gaussian distributions. }
             \label{fig:two_gaussians}
         \end{figure}
@@ -187,21 +187,21 @@
             % Hyperparameter tuning for different validation techniques
             \begin{figure}[h]
              \centering
-             \begin{subfigure}[b]{0.5\textwidth}
+             \begin{subfigure}[b]{0.45\textwidth}
                  \centering
                  \includegraphics[width=\textwidth]{Assignment 1/figures/random_split_validation_surf.pdf}
                 %  \caption{}
                  \label{fig:random_split_validation}
              \end{subfigure}
              \hfill
-             \begin{subfigure}[b]{0.5\textwidth}
+             \begin{subfigure}[b]{0.45\textwidth}
                  \centering
                  \includegraphics[width=\textwidth]{Assignment 1/figures/10_fold_cross_validation_surf.pdf}
                 %  \caption{}
                  \label{fig:10_fold_validation}
              \end{subfigure}
              \hfill
-             \begin{subfigure}[b]{0.5\textwidth}
+             \begin{subfigure}[b]{0.45\textwidth}
                  \centering
                  \includegraphics[width=\textwidth]{Assignment 1/figures/loo_cross_validation_surf.pdf}
                 %  \caption{}
@@ -212,17 +212,253 @@
             
             
         \subsubsection{Automatic parameter tuning}
-    
+            % Simplex and gridsearch hyperparameter tuning results 
+            \begin{figure}[h]
+                 \centering
+                 \hspace{0.05\textwidth}
+                 % Simplex
+                 \begin{subfigure}[b]{0.4\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/rbf_simplex_optimal.pdf}
+                    \caption{Simplex algorithm}
+                     \label{fig:rbf_simplex_tuned}
+                 \end{subfigure}
+                 \hfill
+                 % Gridsearch
+                 \begin{subfigure}[b]{0.4\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/rbf_gridsearch_optimal.pdf}
+                    \caption{Gridsearch algorithm}
+                     \label{fig:rbf_gridsearch_tuned}
+                 \end{subfigure}
+                 \hspace{0.05\textwidth}
+                \caption{Classification results for RBF kernels tuned using Simplex (a) and Gridsearch (b) algorithms.}
+            \end{figure}
+        
+            \textbf{Simplex results:}
+            \begin{itemize}
+                \item $\gamma = 0.07$
+                \item $\sigma^2 = 1.8$
+                \item CPU time $= 2.78$
+            \end{itemize}
+            \textbf{Gridsearch results:}
+            \begin{itemize}
+                \item $\gamma = 17.24$
+                \item $\sigma^2 = 0.08$
+                \item CPU time $= 3.69$
+            \end{itemize}
+            
         \subsubsection{Using ROC curves}
+             % Linear vs RBF simplex vs RBF gridsearch ROC curves
+            \begin{figure}[h]
+                 \centering
+                 % Simplex RBF
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/simplex_rbf_classifier_roc.pdf}
+                    \caption{RBF Simplex}
+                     \label{fig:roc_rbf_simplex_tuned}
+                 \end{subfigure}
+                 \hfill
+                 % Gridsearch RBF
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/gridsearch_rbf_classifier_roc.pdf}
+                    \caption{RBF Gridsearch}
+                     \label{fig:roc_rbf_gridsearch_tuned}
+                 \end{subfigure}
+                 \hfill
+                 % linear 
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/linear_classifier_roc.pdf}
+                    \caption{Linear}
+                     \label{fig:roc_linear}
+                 \end{subfigure}
+                \caption{ROC curves for Simplex- (a), Gridsearch-tuned RBF (b), and linear kernels (c). }
+            \end{figure}
+            
         
         \subsubsection{Bayesian framework} 
+            % Bayesian Sigma2 tuning figures 
+            \begin{figure}[h]
+                 \centering
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/bayes_rbf_gamma_1_sig2_1.000000e-01}
+                    \caption{$\gamma = 1,/ \sigma^2 = 0.1$}
+                     \label{fig:bayes_1}
+                 \end{subfigure}
+                 \hfill
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/bayes_rbf_gamma_1_sig2_1.pdf}
+                    \caption{$\gamma = 1,/ \sigma^2 = 1$}
+                     \label{fig:bayes_2}
+                 \end{subfigure}
+                 \hfill
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/bayes_rbf_gamma_1_sig2_10.pdf}
+                    \caption{$\gamma = 1,/ \sigma^2 = 10$}
+                     \label{fig:bayes_3}
+                 \end{subfigure}
+                \caption{Bayesian SVM classification results for varying $\sigma^2$ values.}
+            \end{figure}
             
+            % Bayesian Gamma tuning figures 
+            \begin{figure}[h]
+                 \centering
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/bayes_rbf_gamma_1.000000e-01_sig2_1.pdf}
+                    \caption{$\gamma =0.01,/ \sigma^2 = 1$}
+                     \label{fig:bayes_4}
+                 \end{subfigure}
+                 \hfill
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/bayes_rbf_gamma_1_sig2_1.pdf}
+                    \caption{$\gamma = 1,/ \sigma^2 = 1$}
+                     \label{fig:bayes_5}
+                 \end{subfigure}
+                 \hfill
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/bayes_rbf_gamma_10_sig2_1.pdf}
+                    \caption{$\gamma = 10,/ \sigma^2 = 1$}
+                     \label{fig:bayes_6}
+                 \end{subfigure}
+                \caption{Bayesian SVM classification results for varying amounts of regularisation, $\gamma$.}
+            \end{figure}
         
 \section{Homework problems}
     \subsection{Ripley dataset} 
-    
+        % Ripley dataset 
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.60\textwidth]{Assignment 1/figures/ripley_data.pdf}
+            \caption{Ripley dataset with shape $(1250,2)$, $\bar{X}_1=-0.07, \bar{X}_2=0.49$ means, and $ \sigma_1=0.48, \sigma_2=0.26$ standard deviations. }
+            \label{fig:two_gaussians}
+        \end{figure}
+        
+        % Ripley dataset for tuned Linear RBF and poly kernels 
+         % Bayesian Gamma tuning figures 
+            \begin{figure}[h]
+                 \centering
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/ripley_simplex_linear_classification_result.pdf}
+                    \caption{Linear kernel}
+                     \label{fig:ripley_linear_result}
+                 \end{subfigure}
+                 \hfill
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/ripley_simplex_rbf_classification_result.pdf}
+                    \caption{RBF kernel}
+                     \label{fig:ripley_rbf_result}
+                 \end{subfigure}
+                 \hfill
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/ripley_simplex_polynomial_classification_result.pdf}
+                    \caption{Polynomial kernel}
+                     \label{fig:ripley_poly_result}
+                 \end{subfigure}
+                 \hfill
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/ripley_simplex_linear_classifier_roc.pdf}
+                    \caption{Linear kernel}
+                     \label{fig:ripley_linear_roc}
+                 \end{subfigure}
+                 \hfill
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/ripley_simplex_rbf_classifier_roc.pdf}
+                    \caption{RBF kernel}
+                     \label{fig:ripley_rbf_roc}
+                 \end{subfigure}
+                 \hfill
+                 \begin{subfigure}[b]{0.3\textwidth}
+                     \centering
+                     \includegraphics[width=\textwidth]{Assignment 1/figures/ripley_simplex_polynomial_classifier_roc.pdf}
+                    \caption{Polynomial kernel}
+                     \label{fig:ripley_poly_roc}
+                 \end{subfigure}
+                \caption{Classification results on the Ripley dataset for linear, RBF and Polynomial kernels tuned with the Simplex algorithm.}
+            \end{figure}
+        
     \subsection{Wisconsin Breast Cancer dataset}
-    
+        % Breast cancer dataset
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.60\textwidth]{Assignment 1/figures/breast_data.pdf}
+            \caption{Breast cancer dataset with shape $(569,30)$.}
+            \label{fig:breast_cancer_dataset}
+        \end{figure}
+        
+        
+        % ROC curves for breast cancer dataset 
+        \begin{figure}[h]
+             \centering
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/breast_linear_classifier_roc.pdf}
+                \caption{Linear kernel}
+                 \label{fig:breast_liner_roc}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/breast_rbf_classifier_roc.pdf}
+                \caption{RBF kernel}
+                 \label{fig:breast_rbf_roc}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/breast_polynomial_classifier_roc.pdf}
+                \caption{Polynomial kernel}
+                 \label{fig:breast_poly_roc}
+             \end{subfigure}
+            \caption{Binary classification results for the Breast Cancer dataset for Linear, RBF and Polynomial kernels tuned with the Simplex algorithm.}
+        \end{figure}
+        
     \subsection{Diabetes dataset}
+        % Breast cancer dataset
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.60\textwidth]{Assignment 1/figures/diabetes_data.pdf}
+            \caption{Diabetes dataset with shape $(600,8)$.}
+            \label{fig:diabetes_dataset}
+        \end{figure}
+        
+        % ROC curves for diabetes
+        \begin{figure}[h]
+             \centering
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/diabetes_linear_classifier_roc.pdf}
+                \caption{Linear kernel}
+                 \label{fig:diabetes_liner_roc}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/diabetes_rbf_classifier_roc.pdf}
+                \caption{RBF kernel}
+                 \label{fig:diabetes_rbf_roc}
+             \end{subfigure}
+             \hfill
+             \begin{subfigure}[b]{0.3\textwidth}
+                 \centering
+                 \includegraphics[width=\textwidth]{Assignment 1/figures/diabetes_polynomial_classifier_roc.pdf}
+                \caption{Polynomial kernel}
+                 \label{fig:diabetes_poly_roc}
+             \end{subfigure}
+            \caption{Binary classification results for the Diabetes dataset for Linear, RBF and Polynomial kernels tuned with the Simplex algorithm.}
+        \end{figure}
         
 \end{document}
