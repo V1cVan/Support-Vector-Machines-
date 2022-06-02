@@ -11,15 +11,22 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{todonotes}
+\usepackage{titling}
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
 
-\title{Support Vector Machines - Final Report}
+\title{Exercise Session 2: Function Estimation and Time Series Prediction}
+\subtitle{Support Vector Machines - Final Report}
 \author{Victor van Wymeersch - R0690930}
-\date{August 2022}
+\date{May 2022}
 
 \begin{document}
 
 \maketitle
-\newpage
 
     % \begin{figure}
     %     \centering
@@ -46,33 +53,7 @@
     %     \caption{}
     % \end{figure}
     
-    
-\section{Exercise Session 1: Classification}
-    \subsection{Two Gaussian's} 
-    
-    \subsection{Support vector machine classifier}
-    
-    \subsection{Least-squares support vector machine classifier}
-    
-        \subsubsection{Influence of hyperparameters and kernel parameters}
-        
-        \subsubsection{Tuning parameters using validation}
-        
-        \subsubsection{Automatic parameter tuning}
-    
-        \subsubsection{Using ROC curves}
-        
-        \subsubsection{Bayesian framework} 
-        
-    \subsection{Homework problems}
-        \subsubsection{Ripley dataset} 
-        
-        \subsubsection{Wisconsin Breast Cancer dataset}
-        
-        \subsubsection{Diabetes dataset}
-
-\newpage
-\section{Exercise Session 2: Function Estimation and Time Series Prediction} 
+\section{Exercises} 
     \subsection{Support vector machine for function estimation} 
     
     \subsection{A simple example: the sinc function}
@@ -85,28 +66,14 @@
     
     \subsection{Robust regression}
     
-    \subsection{Homework problems}
-        \subsubsection{Introduction: time series prediction}
-        
-        \subsubsection{Logmap dataset}
-        
-        \subsubsection{Santa Fe dataset}
+\section{Homework problems}
+    \subsection{Introduction: time series prediction}
+    
+    \subsection{Logmap dataset}
+    
+    \subsection{Santa Fe dataset}
     
     
-\newpage
-\section{Exercise Session 3}
-    \subsection{Kernel principle component analysis} 
-    
-    \subsection{Spectral clustering} 
-    
-    \subsection{Fixed-size LS-SVM}
-    
-    \subsection*{Test section} 
-    \subsection{Homework problems}
-        \subsubsection{Kernel principle component analysis}
-        
-        \subsubsection{Shuttle (statlog)}
-        
-        
+
 
 \end{document}
