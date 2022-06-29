@@ -232,7 +232,7 @@ for loop = [1:1]
         sigma2s = [sigma2s, sig2]; 
         costs = [cost, costs]; 
         execution_speeds = [execution_speeds, toc];
-
+        [alpha,b] = trainlssvm({Xtrain,Ytrain,type,gam,sig2,'RBF_kernel'});
         if algo_idx == 1
             % simp
             plotlssvm({Xtrain,Ytrain,type,gam,sig2,'RBF_kernel','preprocess'},{alpha,b});
@@ -403,6 +403,15 @@ data_shape = size(X)
 data_mean = mean(X)
 data_std = std(X)
 
+figure()
+scatter(X(:,1),X(:,2),25,Y,'filled') 
+grid on 
+xlabel('X1')
+ylabel('X2')
+fig = gcf;
+exportgraphics(fig, '../figures/ripley_data.pdf', 'ContentType', 'vector', 'Resolution', 300);
+
+
 disp('------------------- RBF KERNEL -------------------') 
 % Tune the paramerters of the algorithm
 algo = 'gridsearch';
@@ -516,6 +525,16 @@ data_shape = size(X)
 data_mean = mean(X)
 data_std = std(X)
 data_corr = corr(X)
+
+figure()
+rng('default') % for fair comparison
+X_plot = tsne(X);
+gscatter(X_plot(:,1),X_plot(:,2),Y) 
+xlabel('X1')
+ylabel('X2')
+grid on 
+fig = gcf;
+exportgraphics(fig, '../figures/breast_data.pdf', 'ContentType', 'vector', 'Resolution', 300);
 
 % figure() 
 % imagesc(data_corr)
@@ -631,7 +650,7 @@ exportgraphics(fig, '../figures/breast_linear_classifier_roc.pdf', 'ContentType'
 
 clc, clear, close all 
 disp('================ DIABETES DATASET ================') 
-load './data/diabetes.mat'
+load '../data/diabetes.mat'
 
 % Convert data into standard form
 Xtrain = trainset; 
@@ -645,6 +664,17 @@ data_shape = size(X)
 data_mean = mean(X)
 data_std = std(X)
 data_corr = corr(X)
+
+figure()
+rng('default') % for fair comparison
+X_plot = tsne(X);
+gscatter(X_plot(:,1),X_plot(:,2),Y) 
+xlabel('X1')
+ylabel('X2')
+grid on 
+fig = gcf;
+exportgraphics(fig, '../figures/diabetes_data.pdf', 'ContentType', 'vector', 'Resolution', 300);
+
 
 % figure() 
 % imagesc(data_corr)
