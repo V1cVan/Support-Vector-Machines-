@@ -46,8 +46,12 @@ xlabel('X_1');
 ylabel('X_2');
 title('Structured dataset');
 fig = gcf;
+<<<<<<< HEAD
 figname = '../figures/1_1/yinyan_dataset_clean.pdf';
 exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
+=======
+saveas(fig, '../figures/1_1/yinyan_dataset_clean.pdf')
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 
 % % User defined parameters 
 % nc = 6; % Number of PCA components 
@@ -105,7 +109,11 @@ for nc = number_components
             ylabel('X_2');
             fig = gcf;
             figname = sprintf('../figures/1_1/kpca_Nc_%d_method_%s_sig2_%.1f.pdf',nc,approx_name, sig2);
+<<<<<<< HEAD
             exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
+=======
+            saveas(fig, figname)
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 
 
             % Projections on the first component using linear PCA
@@ -132,6 +140,7 @@ for nc = number_components
     end 
 end 
 
+<<<<<<< HEAD
 %             proj_lin=grid*U_lin;
 
             figure; 
@@ -150,6 +159,8 @@ end
             exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
 
+=======
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 
 % ======================== 1.2 ==========================================
 %% Spectral clustering 
@@ -172,6 +183,7 @@ N_components  = 3;
 perm=randperm(N);   % shuffle the data
 X=X(perm,:);
 
+<<<<<<< HEAD
 figure()
 scatter3(X(:,1),X(:,2),X(:,3),15);
 title('Two interlaced rings in a 3D space');
@@ -182,6 +194,8 @@ fig = gcf;
 figname = '../figures/1_2/spectral_rings_data.pdf';
 exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 
+=======
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 for sig2 = sigmas
     K=kernel_matrix(X,'RBF_kernel',sig2);       %compute the RBF kernel (affinity) matrix
     D=diag(sum(K));                             % compute the degree matrix (sum of the columns of K)
@@ -201,9 +215,20 @@ for sig2 = sigmas
     proj=K*U(:,2:3);                            % Compute the projections onto the subspace spanned by the second,
                                                 % and third largest eigenvectors.                                   
  
+<<<<<<< HEAD
      
 
     figure()
+=======
+    figure()
+    subplot(1,2,1)
+    scatter3(X(:,1),X(:,2),X(:,3),15);
+    title('Two interlaced rings in a 3D space');
+    xlabel('X_1') 
+    ylabel('X_2')
+    zlabel('X_3') 
+    subplot(1,2,2);
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
     scatter3(X(:,1),X(:,2),X(:,3),30,clust);
     title(sprintf('Clustering results for sigma^2 = %.3f', sig2));
     xlabel('X_1') 
@@ -211,6 +236,7 @@ for sig2 = sigmas
     zlabel('X_3') 
     fig = gcf;
     figname = sprintf('../figures/1_2/spectral_rings_sig2_%.3f.pdf',sig2);
+<<<<<<< HEAD
     exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
     
 %     figure();
@@ -234,6 +260,30 @@ for sig2 = sigmas
 %     fig = gcf;
 %     figname = sprintf('../figures/1_2/1_2_components_sig2_%.3f.pdf',sig2);
 %     exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
+=======
+    saveas(fig, figname)
+    
+    figure();
+    subplot(1,2,1);
+    imshow(K);
+    title('Kernel matrix - original data');
+    subplot(1,2,2);
+    imshow(Ksorted);
+    title(sprintf('Kernel matrix after sorting for sigma^2 = %.3f', sig2));
+    fig = gcf;
+    figname = sprintf('../figures/1_2/kernel_sig2_%.3f.pdf',sig2);
+    saveas(fig, figname)
+
+    figure();
+    scatter(proj(:,1),proj(:,2),15,clust);
+    title(sprintf('Projection onto 2nd and 3rd largest eigenvectors for sigma^2 = %.3f', sig2));
+    grid on 
+    xlabel('X_1') 
+    ylabel('X_2')
+    fig = gcf;
+    figname = sprintf('../figures/1_2/1_2_components_sig2_%.3f.pdf',sig2);
+    saveas(fig, figname)
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
     
 end 
 
@@ -300,7 +350,11 @@ for sig2 = sigma2s
     end
     fig = gcf;
     figname = sprintf('../figures/1_3/subsets_sig2_%.3f.pdf',sig2);
+<<<<<<< HEAD
     exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
+=======
+    saveas(fig, figname)
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 end 
 
 %% fslssvm_cript - L_0 approximation 
@@ -333,7 +387,11 @@ points by heursitic k*sqrt(N) where N = dataset size
 function_type = 'c' or 'f' for classification & regression
 respectively
 %}
+<<<<<<< HEAD
 k = 5;
+=======
+k = 4;
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 
 kernel_type = 'lin_kernel'; % or 'lin_kernel','RBF_kernel', 'poly_kernel'
 global_opt = 'csa'; % 'csa' or 'ds'
@@ -341,7 +399,11 @@ global_opt = 'csa'; % 'csa' or 'ds'
 %Process to be performed
 user_process={'FS-LSSVM', 'SV_L0_norm'};
 % user_process={'SV_L0_norm'};
+<<<<<<< HEAD
 window = [10, 15, 20, 25];
+=======
+window = [5, 10, 15, 20, 25, 30];
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 
 [errors, N_support_vectors, time_taken] = fslssvm(X,Y,k,function_type,kernel_type,global_opt,user_process,window,testX,testY);
 %IMAGES SAVED MANUALLY 
@@ -464,7 +526,11 @@ for k=1:lpcs
 end % for k
 fig = gcf;
 figname = '../figures/2_1/KPCA.pdf';
+<<<<<<< HEAD
 exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
+=======
+saveas(fig, figname)
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 
 
 % denosing using Linear PCA for comparison
@@ -513,7 +579,11 @@ for k=1:lpcs
 end % for k
 fig = gcf;
 figname = '../figures/2_1/Linear_PCA.pdf';
+<<<<<<< HEAD
 exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
+=======
+saveas(fig, figname)
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 
 
 %% Homework problems - K-PCA - Denoising digits Test with different sigma values 
@@ -631,13 +701,18 @@ for sigmafactor = sigmafactors
     end % for k
     fig = gcf;
     figname = sprintf('../figures/2_1/KPCA_sigmafactor_%.2f.pdf',sigmafactor);
+<<<<<<< HEAD
     exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
+=======
+    saveas(fig, figname)
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 end
 
 
 
 %% Homework problems - K-PCA - RECONSTRUCTION ERROR 
 % DIGITS 
+<<<<<<< HEAD
 %
 % Experiments on the handwriting data set on kPCA for reconstruction and denoising
 %
@@ -843,6 +918,14 @@ exportgraphics(fig, figname, 'ContentType', 'vector', 'Resolution', 300);
 %      end % for i
 %     end % for k
 %end
+=======
+%{ 
+    
+%} 
+
+% DO THIS QUESTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 
 % ======================== 2.2.1 ==========================================
 %% Fixed size LS-SVM - Shuttle 
@@ -898,13 +981,21 @@ figure()
 %% Fixed size LS-SVM - Califorinia 
 data = load('california.dat','-ascii'); function_type = 'f';
 % addpath('../LSSVMlab')
+<<<<<<< HEAD
 data = data(1:700,:);
+=======
+
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 X = data(:,1:end-1);
 Y = data(:,end);
 testX = [];
 testY = [];
 
+<<<<<<< HEAD
 
+=======
+%%
+>>>>>>> 66f727a88e27a1986890d8dbe0bd9bbbe1b155e1
 
 %Parameter for input space selection
 %Please type >> help fsoperations; to get more information  
